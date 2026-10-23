@@ -24,6 +24,7 @@ https://www.online-utility.org/image/convert/to/XBM
   #include "SDInterface.h"
 #endif
 #include "Buffer.h"
+#include "MobileAP.h"
 
 #ifdef HAS_FLIPPER_LED
   #include "flipperLED.h"
@@ -326,11 +327,16 @@ void setup()
 
   #ifdef HAS_ACT_LED
     pinMode(ACT_LED_PIN, OUTPUT);
-    delay(100);
-    digitalWrite(ACT_LED_PIN, LOW);
+    for (int i = 0; i < 3; i++) {
+      digitalWrite(ACT_LED_PIN, HIGH);
+      delay(80);
+      digitalWrite(ACT_LED_PIN, LOW);
+      delay(80);
+    }
   #endif
 
-  while(!Serial)
+  unsigned long start_serial_wait = millis();
+  while(!Serial && (millis() - start_serial_wait < 1500))
     delay(10);
 
   #ifdef HAS_C5_SD
@@ -496,6 +502,7 @@ void setup()
   wifi_scan_obj.StartScan(WIFI_SCAN_OFF);
   
   cli_obj.RunSetup();
+  MobileAP.begin();
 }
 
 
@@ -537,6 +544,8 @@ void loop()
   #ifdef HAS_T_DONGLE_DISPLAY
     t_dongle_display.update(currentTime, wifi_scan_obj);
   #endif
+
+  MobileAP.update();
 
   #ifdef HAS_GPS
     gps_obj.main();

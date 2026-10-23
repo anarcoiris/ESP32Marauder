@@ -45,6 +45,11 @@
   //#define MARAUDER_M5_NANO_C6
   //#define DUAL_MINI_C5
   //#define MARAUDER_POOM
+  #define MARAUDER_FLIPPER_KILLER
+  //#define EXP_BOARD_S3
+  #if defined(EXP_BOARD_S3) && !defined(MARAUDER_FLIPPER_KILLER)
+    #define MARAUDER_FLIPPER_KILLER
+  #endif
   // Waveshare ESP32-C5-Touch-LCD-3.5 board. Same silicon/panel class as the
   // Pancake V8 (ESP32-C5, ST7796 320x480, FT6336), so reuse Pancake's verified
   // C5 feature + geometry logic and override only this board's differing pins below.
@@ -121,6 +126,8 @@
     #define HARDWARE_NAME "Flipper Zero Dev Board"
   #elif defined(MARAUDER_MULTIBOARD_S3)
     #define HARDWARE_NAME "Flipper Zero Multi Board S3"
+  #elif defined(MARAUDER_FLIPPER_KILLER)
+    #define HARDWARE_NAME "Flipper Killer S3"
   #elif defined(ESP32_LDDB)
     #define HARDWARE_NAME "ESP32 LDDB"
   #elif defined(MARAUDER_DEV_BOARD_PRO)
@@ -164,7 +171,8 @@
       defined(MARAUDER_MINI) || defined(MARAUDER_V4) || defined(MARAUDER_V6) || \
       defined(MARAUDER_V6_1) || defined(MARAUDER_V7) || defined(MARAUDER_V7_1) || \
       defined(MARAUDER_KIT) || defined(GENERIC_ESP32) || defined(MARAUDER_FLIPPER) || \
-      defined(MARAUDER_MULTIBOARD_S3) || defined(ESP32_LDDB) || \
+      defined(MARAUDER_MULTIBOARD_S3) || defined(MARAUDER_FLIPPER_KILLER) || \
+      defined(ESP32_LDDB) || \
       defined(MARAUDER_DEV_BOARD_PRO) || defined(XIAO_ESP32_S3) || \
       defined(XIAO_ESP32_C5) || defined(MARAUDER_REV_FEATHER) || \
       defined(MARAUDER_CYD_MICRO) || defined(MARAUDER_CYD_2USB) || \
@@ -527,6 +535,26 @@
     #define HAS_GPS
     #define HAS_SD
     #define USE_SD
+    //#define HAS_PSRAM
+    //#define HAS_TEMP_SENSOR
+    #define HAS_DIRECT_UPLOAD
+  #endif
+
+  #ifdef MARAUDER_FLIPPER_KILLER
+    //#define FLIPPER_ZERO_HAT
+    //#define HAS_BATTERY
+    #define HAS_BT
+    //#define HAS_BUTTONS
+    //#define HAS_NEOPIXEL_LED
+    //#define HAS_PWR_MGMT
+    //#define HAS_SCREEN
+    //#define HAS_GPS
+    #define HAS_SD
+    #define USE_SD
+    #define HAS_SEPARATE_SD
+    #define HAS_ACT_LED
+    #define HAS_NIMBLE_2
+    #define HAS_IDF_3
     //#define HAS_PSRAM
     //#define HAS_TEMP_SENSOR
     #define HAS_DIRECT_UPLOAD
@@ -2871,6 +2899,13 @@
       #define SD_CS 10
     #endif
 
+    #ifdef MARAUDER_FLIPPER_KILLER
+      #define SD_CS   10
+      #define SD_MOSI 11
+      #define SD_SCK  12
+      #define SD_MISO 13
+    #endif
+
     #ifdef ESP32_LDDB
       #define SD_CS 4
     #endif
@@ -3000,6 +3035,8 @@
   #elif defined(MARAUDER_FLIPPER)
     #define MEM_LOWER_LIM 10000
   #elif defined(MARAUDER_MULTIBOARD_S3)
+    #define MEM_LOWER_LIM 10000
+  #elif defined(MARAUDER_FLIPPER_KILLER)
     #define MEM_LOWER_LIM 10000
   #elif defined(ESP32_LDDB)
     #define MEM_LOWER_LIM 10000
@@ -3531,6 +3568,10 @@
       #define ACT_LED_PIN 28
     #endif
 
+    #ifdef MARAUDER_FLIPPER_KILLER
+      #define ACT_LED_PIN 4
+    #endif
+
   #endif
 
 
@@ -3555,6 +3596,12 @@
   #ifdef HAS_BATTERY
     #undef HAS_BATTERY
   #endif
+#if defined(MARAUDER_FLIPPER_KILLER) && ARDUINO_USB_CDC_ON_BOOT
+  #include "DualSerial.h"
+  #undef Serial
+  #define Serial DualSerial
 #endif
 
 #endif
+#endif
+

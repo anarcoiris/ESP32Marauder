@@ -1,4 +1,5 @@
 #include "CommandLine.h"
+#include "MobileAP.h"
 
 // GCOVR_EXCL_START -- serial protocol output depends on Arduino Serial.
 namespace {
@@ -68,11 +69,17 @@ void CommandLine::RunSetup() {
   Serial.print("> ");
 }
 
+static bool hadSerialInput = false;
+
 String CommandLine::getSerialInput() {
   String input = "";
 
-  if (Serial.available() > 0)
+  if (Serial.available() > 0) {
     input = Serial.readStringUntil('\n');
+    hadSerialInput = true;
+  } else {
+    hadSerialInput = false;
+  }
 
   input.trim();
   return input;
@@ -81,9 +88,11 @@ String CommandLine::getSerialInput() {
 void CommandLine::main(uint32_t currentTime) {
   String input = this->getSerialInput();
 
-  this->runCommand(input);
+  if (input != "") {
+    this->runCommand(input);
+  }
 
-  if (input != "")
+  if (hadSerialInput)
     Serial.print("> ");
 }
 
@@ -366,7 +375,20 @@ void CommandLine::runCommand(String input) {
       Serial.println(HELP_BT_SKIM_CMD);
     #endif
     Serial.println(HELP_BRIGHTNESS_CMD);
+    Serial.println(F("mobileap <on/off/status>"));
     Serial.println(HELP_FOOT);
+    return;
+  }
+
+  // Mobile AP Standalone command
+  if (cmd_args.get(0) == "mobileap") {
+    if (cmd_args.size() > 1 && cmd_args.get(1) == "on") {
+      MobileAP.startAP();
+    } else if (cmd_args.size() > 1 && cmd_args.get(1) == "off") {
+      MobileAP.stopAP();
+    } else {
+      Serial.println(MobileAP.isActive() ? F("MobileAP is ACTIVE (192.168.4.1)") : F("MobileAP is OFF. Use 'mobileap on' or hold SW2 (BOOT) for 1.5s"));
+    }
     return;
   }
 

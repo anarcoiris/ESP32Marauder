@@ -1,0 +1,13 @@
+VirtualHere Client IPC, below are the available devices:
+(Value in brackets = address, * = Auto-Use)
+
+Windows Hub (DESKTOP-VQPTPVP:7575) 
+   --> (COM4) USB JTAG/serial debug unit (DESKTOP-VQPTPVP.6) (In-use by you)
+   --> EasyCamera (DESKTOP-VQPTPVP.4) 
+   --> 0xe500 (DESKTOP-VQPTPVP.3) 
+
+Auto-Find currently on
+Auto-Use All currently off
+Reverse Lookup currently on
+Reverse SSL Lookup currently on
+VirtualHere Client not running as a service
