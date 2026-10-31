@@ -392,6 +392,27 @@ void CommandLine::runCommand(String input) {
     return;
   }
 
+  // Memory / System info command
+  if (cmd_args.get(0) == "memfree" || cmd_args.get(0) == "sysinfo") {
+    Serial.printf("[SysInfo] Free Heap: %u B, Min Free: %u B, Max Alloc: %u B\r\n",
+                  ESP.getFreeHeap(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
+    Serial.printf("[SysInfo] Chip: ESP32-S3 rev %d, Cores: %d, Freq: %u MHz\r\n",
+                  ESP.getChipRevision(), ESP.getChipCores(), ESP.getCpuFreqMHz());
+    return;
+  }
+
+  // Friendly alias for scanap / scansta -> scanall
+  if (cmd_args.get(0) == "scanap" || cmd_args.get(0) == "scansta") {
+    this->runCommand(SCAN_ALL_CMD);
+    return;
+  }
+
+  // Friendly alias for blescan -> sniffbt
+  if (cmd_args.get(0) == "blescan") {
+    this->runCommand(BT_SNIFF_CMD);
+    return;
+  }
+
   // Stop Scan
   if (cmd_args.get(0) == STOPSCAN_CMD) {
     int f_arg = this->argSearch(&cmd_args, "-f");
@@ -668,7 +689,9 @@ void CommandLine::runCommand(String input) {
     if (ch_set != -1) {
       wifi_scan_obj.set_channel = cmd_args.get(ch_set + 1).toInt();
       wifi_scan_obj.changeChannel();
-      Serial.println(wifi_scan_obj.set_channel);
+    } else if (cmd_args.size() == 2 && cmd_args.get(1).toInt() > 0) {
+      wifi_scan_obj.set_channel = cmd_args.get(1).toInt();
+      wifi_scan_obj.changeChannel();
     }
     Serial.println(wifi_scan_obj.set_channel);
   }

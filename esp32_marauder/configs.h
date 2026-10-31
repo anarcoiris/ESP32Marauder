@@ -3596,12 +3596,13 @@
   #ifdef HAS_BATTERY
     #undef HAS_BATTERY
   #endif
+#endif
+
 #if defined(MARAUDER_FLIPPER_KILLER) && ARDUINO_USB_CDC_ON_BOOT
   #include "DualSerial.h"
   #undef Serial
   #define Serial DualSerial
 #endif
 
-#endif
 #endif
 
